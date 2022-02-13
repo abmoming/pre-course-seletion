@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="pers.justin.preselectioncourses.mapper.CsCourseMapper">
+    <resultMap id="BaseResultMap" type="pers.justin.preselectioncourses.entity.CsCourse">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="class_address" property="classAddress" jdbcType="VARCHAR"/>
+        <result column="class_time" property="classTime" jdbcType="TIMESTAMP"/>
+        <result column="num_people" property="numPeople" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="is_delete" property="isDelete" jdbcType="BIT"/>
+        <result column="delete_time" property="deleteTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, name, class_address, class_time, num_people, status, creator, create_time, is_delete, 
+    delete_time
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from cs_course
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="queryByPaged" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"></include>
+      from cs_course
+      where is_delete = 0
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from cs_course
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="pers.justin.preselectioncourses.entity.CsCourse">
+    insert into cs_course (id, name, class_address, 
+      class_time, num_people, status, 
+      creator, create_time, is_delete, 
+      delete_time)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{classAddress,jdbcType=VARCHAR}, 
+      #{classTime,jdbcType=TIMESTAMP}, #{numPeople,jdbcType=INTEGER}, #{status,jdbcType=BIT}, 
+      #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=BIT}, 
+      #{deleteTime,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="pers.justin.preselectioncourses.entity.CsCourse">
+        insert into cs_course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="classAddress != null">
+                class_address,
+            </if>
+            <if test="classTime != null">
+                class_time,
+            </if>
+            <if test="numPeople != null">
+                num_people,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="deleteTime != null">
+                delete_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="classAddress != null">
+                #{classAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="classTime != null">
+                #{classTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="numPeople != null">
+                #{numPeople,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="pers.justin.preselectioncourses.entity.CsCourse">
+        update cs_course
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="classAddress != null">
+                class_address = #{classAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="classTime != null">
+                class_time = #{classTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="numPeople != null">
+                num_people = #{numPeople,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="pers.justin.preselectioncourses.entity.CsCourse">
+    update cs_course
+    set name = #{name,jdbcType=VARCHAR},
+      class_address = #{classAddress,jdbcType=VARCHAR},
+      class_time = #{classTime,jdbcType=TIMESTAMP},
+      num_people = #{numPeople,jdbcType=INTEGER},
+      status = #{status,jdbcType=BIT},
+      creator = #{creator,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=BIT},
+      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
