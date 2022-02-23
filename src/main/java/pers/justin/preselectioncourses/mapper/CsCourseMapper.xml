@@ -5,7 +5,8 @@
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="class_address" property="classAddress" jdbcType="VARCHAR"/>
-        <result column="class_time" property="classTime" jdbcType="TIMESTAMP"/>
+        <result column="class_start_time" property="classStartTime" jdbcType="TIMESTAMP"/>
+        <result column="class_end_time" property="classEndTime" jdbcType="TIMESTAMP"/>
         <result column="num_people" property="numPeople" jdbcType="INTEGER"/>
         <result column="status" property="status" jdbcType="BIT"/>
         <result column="creator" property="creator" jdbcType="VARCHAR"/>
@@ -14,35 +15,105 @@
         <result column="delete_time" property="deleteTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, name, class_address, class_time, num_people, status, creator, create_time, is_delete, 
+        id, name, class_address, class_start_time, class_end_time, num_people, status, creator, create_time, is_delete,
     delete_time
-  </sql>
+    </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
         from cs_course
         where id = #{id,jdbcType=INTEGER}
     </select>
-    <select id="queryByPaged" resultMap="BaseResultMap">
-      select
-      <include refid="Base_Column_List"></include>
-      from cs_course
-      where is_delete = 0
+    <select id="queryByUser" resultMap="BaseResultMap">
+        select
+        co.id, co.name, co.class_address, co.class_start_time, co.class_end_time, co.num_people, co.status, co.creator,
+        co.create_time, co.is_delete,
+        co.delete_time
+        from cs_course co
+        inner join cs_selection se on co.id = se.cou_id
+        where is_delete = 0
+        <if test="userId != null">
+            and se.user_id = #{userId}
+        </if>
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from cs_course
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-    <insert id="insert" parameterType="pers.justin.preselectioncourses.entity.CsCourse">
-    insert into cs_course (id, name, class_address, 
-      class_time, num_people, status, 
-      creator, create_time, is_delete, 
-      delete_time)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{classAddress,jdbcType=VARCHAR}, 
-      #{classTime,jdbcType=TIMESTAMP}, #{numPeople,jdbcType=INTEGER}, #{status,jdbcType=BIT}, 
-      #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=BIT}, 
-      #{deleteTime,jdbcType=TIMESTAMP})
-  </insert>
+    <!--<select id="checkConflictsByClassTimeAndAddress" resultMap="BaseResultMap"
+            parameterType="pers.justin.preselectioncourses.entity.CsCourse">
+        select
+        <include refid="Base_Column_List"></include>
+        from cs_course
+        <where>
+            and class_address = #{classAddress}
+            and (
+            (class_start_time &lt;= #{classStartTime} and class_end_time &gt;= #{classStartTime} and
+            status = false)
+            or (class_start_time &lt;= #{classEndTime} and class_end_time &gt;= #{classEndTime} and
+            status = false)
+            or (class_start_time &gt;= #{classStartTime} and class_end_time &lt;= #{classEndTime} and
+            status = false)
+            )
+        </where>
+    </select>-->
+    <select id="checkConflictsByClassTimeAndAddress" resultType="map"
+            parameterType="pers.justin.preselectioncourses.entity.CsCourse">
+        select
+        <include refid="Base_Column_List"></include>
+        from cs_course
+        <where>
+            <if test="classAddress != null">
+                and class_address = #{classAddress}
+            </if>
+            <if test="classStartTime != null || classEndTime != null">
+                and (
+                (class_start_time &lt;= #{classStartTime} and class_end_time &gt;= #{classStartTime} and
+                status = false and is_delete = false)
+                or (class_start_time &lt;= #{classEndTime} and class_end_time &gt;= #{classEndTime} and
+                status = false and is_delete = false)
+                or (class_start_time &gt;= #{classStartTime} and class_end_time &lt;= #{classEndTime} and
+                status = false and is_delete = false)
+                )
+            </if>
+        </where>
+    </select>
+    <select id="queryByPaged" resultMap="BaseResultMap">
+        select co.id,
+        co.name,
+        co.class_address,
+        co.class_start_time,
+        co.class_end_time,
+        co.num_people,
+        co.status,
+        co.creator,
+        co.create_time,
+        co.is_delete,
+        co.delete_time
+        from cs_course co
+        inner join cs_selection se on co.id = se.cou_id
+        inner join cs_user cu on se.user_id = cu.id
+        where co.is_delete = 0 and co.status = 0 and cu.role_name = 'ROLE_teacher'
+        <if test="username != null">
+            and (
+            (cu.username like concat('%', #{userOrCouName},'%'))
+            or (co.name like concat('%',#{userOrCouName},'%'))
+            )
+        </if>
+    </select>
+    <update id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        update cs_course
+        set is_delete = true
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <insert id="insert" parameterType="pers.justin.preselectioncourses.entity.CsCourse" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into cs_course (id, name, class_address,
+                               class_start_time, class_end_time, num_people, status,
+                               creator, create_time, is_delete,
+                               delete_time)
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{classAddress,jdbcType=VARCHAR},
+                #{classStartTime,jdbcType=TIMESTAMP}, #{classEndTime,jdbcType=TIMESTAMP}, #{numPeople,jdbcType=INTEGER},
+                #{status,jdbcType=BIT},
+                #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=BIT},
+                #{deleteTime,jdbcType=TIMESTAMP})
+    </insert>
     <insert id="insertSelective" parameterType="pers.justin.preselectioncourses.entity.CsCourse">
         insert into cs_course
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -55,8 +126,11 @@
             <if test="classAddress != null">
                 class_address,
             </if>
-            <if test="classTime != null">
-                class_time,
+            <if test="classStartTime != null">
+                class_start_time,
+            </if>
+            <if test="classEndTime != null">
+                class_end_time,
             </if>
             <if test="numPeople != null">
                 num_people,
@@ -87,8 +161,11 @@
             <if test="classAddress != null">
                 #{classAddress,jdbcType=VARCHAR},
             </if>
-            <if test="classTime != null">
-                #{classTime,jdbcType=TIMESTAMP},
+            <if test="class_start_time != null">
+                #{classStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="class_end_time != null">
+                #{classEndTime,jdbcType=TIMESTAMP},
             </if>
             <if test="numPeople != null">
                 #{numPeople,jdbcType=INTEGER},
@@ -119,8 +196,11 @@
             <if test="classAddress != null">
                 class_address = #{classAddress,jdbcType=VARCHAR},
             </if>
-            <if test="classTime != null">
-                class_time = #{classTime,jdbcType=TIMESTAMP},
+            <if test="classStartTime != null">
+                class_start_time = #{classStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="classEndTime != null">
+                class_End_time = #{classStartTime,jdbcType=TIMESTAMP},
             </if>
             <if test="numPeople != null">
                 num_people = #{numPeople,jdbcType=INTEGER},
@@ -144,16 +224,17 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="pers.justin.preselectioncourses.entity.CsCourse">
-    update cs_course
-    set name = #{name,jdbcType=VARCHAR},
-      class_address = #{classAddress,jdbcType=VARCHAR},
-      class_time = #{classTime,jdbcType=TIMESTAMP},
-      num_people = #{numPeople,jdbcType=INTEGER},
-      status = #{status,jdbcType=BIT},
-      creator = #{creator,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      is_delete = #{isDelete,jdbcType=BIT},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+        update cs_course
+        set name             = #{name,jdbcType=VARCHAR},
+            class_address    = #{classAddress,jdbcType=VARCHAR},
+            class_start_time = #{classStartTime,jdbcType=TIMESTAMP},
+            class_end_time   = #{classEndTime,jdbcType=TIMESTAMP},
+            num_people       = #{numPeople,jdbcType=INTEGER},
+            status           = #{status,jdbcType=BIT},
+            creator          = #{creator,jdbcType=VARCHAR},
+            create_time      = #{createTime,jdbcType=TIMESTAMP},
+            is_delete        = #{isDelete,jdbcType=BIT},
+            delete_time      = #{deleteTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

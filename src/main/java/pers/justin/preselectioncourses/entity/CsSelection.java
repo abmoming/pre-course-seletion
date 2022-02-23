@@ -1,16 +1,18 @@
 package pers.justin.preselectioncourses.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
 @Setter
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CsSelection {
     private Integer id;
 
-    private Integer stuId;
+    private Integer userId;
 
     private Integer couId;
 

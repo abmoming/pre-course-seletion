@@ -1,5 +1,7 @@
 package pers.justin.preselectioncourses.mapper;
 
+import org.apache.ibatis.annotations.Param;
+import pers.justin.preselectioncourses.entity.CsCourse;
 import pers.justin.preselectioncourses.entity.CsSelection;
 
 public interface CsSelectionMapper {
@@ -14,4 +16,9 @@ public interface CsSelectionMapper {
     int updateByPrimaryKeySelective(CsSelection record);
 
     int updateByPrimaryKey(CsSelection record);
+
+    int deleteByUIdAndCId(CsSelection csSelection);
+
+    String getUsernameByCourse(CsCourse csCourse);
+
 }

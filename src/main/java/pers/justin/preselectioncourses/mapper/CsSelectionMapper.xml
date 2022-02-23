@@ -1,82 +1,100 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="pers.justin.preselectioncourses.mapper.CsSelectionMapper" >
-  <resultMap id="BaseResultMap" type="pers.justin.preselectioncourses.entity.CsSelection" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="stu_id" property="stuId" jdbcType="INTEGER" />
-    <result column="cou_id" property="couId" jdbcType="INTEGER" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-    id, stu_id, cou_id, create_time
-  </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from cs_selection
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from cs_selection
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="pers.justin.preselectioncourses.entity.CsSelection" >
-    insert into cs_selection (id, stu_id, cou_id, 
-      create_time)
-    values (#{id,jdbcType=INTEGER}, #{stuId,jdbcType=INTEGER}, #{couId,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" parameterType="pers.justin.preselectioncourses.entity.CsSelection" >
-    insert into cs_selection
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="stuId != null" >
-        stu_id,
-      </if>
-      <if test="couId != null" >
-        cou_id,
-      </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="stuId != null" >
-        #{stuId,jdbcType=INTEGER},
-      </if>
-      <if test="couId != null" >
-        #{couId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="pers.justin.preselectioncourses.entity.CsSelection" >
-    update cs_selection
-    <set >
-      <if test="stuId != null" >
-        stu_id = #{stuId,jdbcType=INTEGER},
-      </if>
-      <if test="couId != null" >
-        cou_id = #{couId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="pers.justin.preselectioncourses.entity.CsSelection" >
-    update cs_selection
-    set stu_id = #{stuId,jdbcType=INTEGER},
-      cou_id = #{couId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+<mapper namespace="pers.justin.preselectioncourses.mapper.CsSelectionMapper">
+    <resultMap id="BaseResultMap" type="pers.justin.preselectioncourses.entity.CsSelection">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="cou_id" property="couId" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, user_id, cou_id, create_time
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from cs_selection
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="getUsernameByCourse" resultType="java.lang.String"
+            parameterType="pers.justin.preselectioncourses.entity.CsCourse">
+        select u.username
+        from cs_course c
+                 inner join cs_selection se on c.id = se.cou_id
+                 inner join cs_user u on se.user_id = u.id
+        where c.status = false
+          and c.is_delete = false
+          and u.id = #{userId}
+          and u.role_name = 'ROLE_teacher'
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from cs_selection
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteByUIdAndCId" parameterType="pers.justin.preselectioncourses.entity.CsSelection">
+        delete
+        from cs_selection
+        where user_id = #{userId}
+          and cou_id = #{couId}
+    </delete>
+    <insert id="insert" parameterType="pers.justin.preselectioncourses.entity.CsSelection">
+        insert into cs_selection (id, user_id, cou_id,
+                                  create_time)
+        values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{couId,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="pers.justin.preselectioncourses.entity.CsSelection">
+        insert into cs_selection
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="couId != null">
+                cou_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="couId != null">
+                #{couId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="pers.justin.preselectioncourses.entity.CsSelection">
+        update cs_selection
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="couId != null">
+                cou_id = #{couId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="pers.justin.preselectioncourses.entity.CsSelection">
+        update cs_selection
+        set user_id     = #{userId,jdbcType=INTEGER},
+            cou_id      = #{couId,jdbcType=INTEGER},
+            create_time = #{createTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

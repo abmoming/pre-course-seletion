@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import pers.justin.preselectioncourses.entity.CsCourse;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CsCourseMapper {
     int deleteByPrimaryKey(Integer id);
@@ -19,5 +20,9 @@ public interface CsCourseMapper {
 
     int updateByPrimaryKey(CsCourse record);
 
-    List<CsCourse> queryByPaged();
+    List<CsCourse> queryByUser(String userId);
+
+    Map<String, Object> checkConflictsByClassTimeAndAddress(CsCourse csCourse);
+
+    List<CsCourse> queryByPaged(String userOrCouName);
 }

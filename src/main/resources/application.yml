@@ -9,7 +9,13 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
 logging:
   level:
     pers.justin.preselectioncourses: debug
+
+## 想要自动转驼峰，必须开启
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
