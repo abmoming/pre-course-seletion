@@ -11,6 +11,7 @@ import pers.justin.preselectioncourses.utils.Md5Util;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Justin on 2022-02-12 23:26
@@ -38,6 +39,11 @@ public class CsUserService {
     public List<CsUser> queryUser(String roleName, String username) {
 
         return csUserMapper.queryUser(roleName, username);
+    }
+
+    public List<Map<String, Object>> queryUser2(String roleName, String username, String couName) {
+
+        return csUserMapper.queryUser2(roleName, username, couName);
     }
 
     public boolean addUser(CsUser csUser) {

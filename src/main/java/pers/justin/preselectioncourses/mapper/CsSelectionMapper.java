@@ -21,4 +21,5 @@ public interface CsSelectionMapper {
 
     String getUsernameByCourse(CsCourse csCourse);
 
+    Integer selectCourseCount(int id);
 }

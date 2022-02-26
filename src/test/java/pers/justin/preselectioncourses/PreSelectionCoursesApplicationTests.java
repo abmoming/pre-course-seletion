@@ -8,10 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pers.justin.preselectioncourses.entity.CsCourse;
 import pers.justin.preselectioncourses.mapper.CsCourseMapper;
 import pers.justin.preselectioncourses.service.CsCourseService;
+import pers.justin.preselectioncourses.utils.DateUtil;
 import pers.justin.preselectioncourses.utils.Md5Util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,7 +66,16 @@ class PreSelectionCoursesApplicationTests {
         CsCourse csCourse = new ObjectMapper().readValue(new ObjectMapper().writeValueAsString(map), CsCourse.class);
         System.out.println(csCourse);
         System.out.println(new ObjectMapper().writeValueAsString(map));
+    }
 
+    @Test
+    void demo() throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date parse = sdf.parse("2022-02-20 22:00:00");
+        int i = DateUtil.dayForWeek("2022-02-20 22:00:00");
+        System.out.println(i);
+        String dayOfDate = DateUtil.getDayOfDate(parse);
+        System.out.println(dayOfDate);
     }
 
 }

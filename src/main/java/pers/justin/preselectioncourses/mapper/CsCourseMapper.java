@@ -24,5 +24,5 @@ public interface CsCourseMapper {
 
     Map<String, Object> checkConflictsByClassTimeAndAddress(CsCourse csCourse);
 
-    List<CsCourse> queryByPaged(String userOrCouName);
+    List<Map<String, Object>> queryByPaged(String userOrCouName);
 }

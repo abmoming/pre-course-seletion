@@ -27,6 +27,14 @@
           and u.id = #{userId}
           and u.role_name = 'ROLE_teacher'
     </select>
+    <select id="selectCourseCount" resultType="java.lang.Integer">
+        select count(*)
+        from cs_selection se
+                 inner join cs_user cu on se.user_id = cu.id
+        where se.cou_id = #{id}
+          and cu.role_name = 'ROLE_student'
+          and cu.is_delete = false
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
         from cs_selection

@@ -74,7 +74,7 @@
             </if>
         </where>
     </select>
-    <select id="queryByPaged" resultMap="BaseResultMap">
+    <select id="queryByPaged" resultType="map">
         select co.id,
         co.name,
         co.class_address,
@@ -85,7 +85,9 @@
         co.creator,
         co.create_time,
         co.is_delete,
-        co.delete_time
+        co.delete_time,
+        cu.username,
+        cu.id as user_id
         from cs_course co
         inner join cs_selection se on co.id = se.cou_id
         inner join cs_user cu on se.user_id = cu.id

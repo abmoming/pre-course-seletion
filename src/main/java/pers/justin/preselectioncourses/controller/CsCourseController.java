@@ -48,7 +48,7 @@ public class CsCourseController {
 
     @PostMapping("/confirm_coverage")
     public RespBean confirmCoverage(@RequestBody CsCourse csCourse) throws JsonProcessingException {
-        if(csCourseService.confirmCoverage(csCourse)) {
+        if (csCourseService.confirmCoverage(csCourse)) {
             return RespBean.success("覆盖数据成功!");
         }
         return RespBean.fail("覆盖数据失败!");
@@ -56,10 +56,19 @@ public class CsCourseController {
 
     @PostMapping("/select_course")
     public RespBean addSelectCourse(@RequestBody CsSelection csSelection) {
-        if(csSelectionService.addSelectCourse(csSelection)){
+        if (csSelectionService.addSelectCourse(csSelection)) {
             return RespBean.success("选课成功!");
         } else {
             return RespBean.fail("选课失败!");
+        }
+    }
+
+    @DeleteMapping("/cancel_select_course")
+    public RespBean cancelSelectCourse(CsSelection csSelection) {
+        if (csSelectionService.cancelSelectCourse(csSelection)) {
+            return RespBean.success("取消选课成功!");
+        } else {
+            return RespBean.fail("取消选课失败!");
         }
     }
 

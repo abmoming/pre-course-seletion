@@ -34,6 +34,11 @@ public class CsUserController {
         return RespBean.build().setData(userService.queryUser(roleName, username));
     }
 
+    @GetMapping("/query2")
+    public RespBean queryUser2(String roleName, String username, String couName) {
+        return RespBean.build().setData(userService.queryUser2(roleName, username, couName));
+    }
+
     @PostMapping("/")
     public RespBean addUser(@RequestBody CsUser csUser) {
         if(userService.addUser(csUser)){

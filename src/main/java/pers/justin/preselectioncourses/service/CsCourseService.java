@@ -4,13 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import jdk.net.SocketFlow;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pers.justin.preselectioncourses.entity.CsCourse;
 import pers.justin.preselectioncourses.entity.CsSelection;
 import pers.justin.preselectioncourses.mapper.CsCourseMapper;
+import pers.justin.preselectioncourses.utils.DateUtil;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -29,6 +30,8 @@ public class CsCourseService {
 
     @Autowired
     CsSelectionService csSelectionService;
+
+    private static final String[] WEEK_CN = {"星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"};
 
     /**
      * 添加课程或者修改课程
@@ -140,14 +143,49 @@ public class CsCourseService {
      * @param pageNumber 页码
      * @param pageSize   显示数据
      */
-    public PageInfo<CsCourse> queryByPaged(Integer pageNumber, Integer pageSize, String userOrCouName) {
+    public PageInfo<Map<String, Object>> queryByPaged(Integer pageNumber, Integer pageSize, String userOrCouName) {
 
         // 使用PageHelper分页插件
         if (ObjectUtils.isNotEmpty(pageNumber) && ObjectUtils.isNotEmpty(pageSize)) {
             PageHelper.startPage(pageNumber, pageSize);
         }
 
-            List<CsCourse> csCourses = csCourseMapper.queryByPaged(userOrCouName);
+        List<Map<String, Object>> csCourses = csCourseMapper.queryByPaged(userOrCouName);
+
+        try {
+            for (Map<String, Object> map : csCourses) {
+
+                // 统计课程人数
+                int selectCourseNumbers = csSelectionService.selectCourseCount((int) map.get("id"));
+
+                boolean status = (boolean) map.get("status");
+                // 格式转换，2022-01-01 11:00~12:00
+                Date classStartTime = (Date) map.get("classStartTime");
+                Date classEndTime = (Date) map.get("classEndTime");
+                String startFormatTime = DateUtil.format(classStartTime, DateUtil.exportXlsDateCreateTimeFormat);
+                String endFormatTime = DateUtil.format(classEndTime, DateUtil.exportXlsDateCreateTimeFormat);
+                String[] start = startFormatTime.split(" ");
+                String[] end = endFormatTime.split(" ");
+                String startDate = start[0];
+                String startHour = start[1];
+                String endHour = end[1];
+                String time = startDate + " " + startHour + " ~ " + endHour;
+
+                // 算出时间为第几周，星期几
+                int day = DateUtil.dayForWeek(startFormatTime);
+                String dayStr = null;
+                for (int i = 0; i <= WEEK_CN.length; i++) {
+                    dayStr = WEEK_CN[day - 1];
+                }
+
+                map.put("time", time);
+                map.put("weekContent", dayStr);
+                map.put("statusCn", status ? "已结课" : "未结课");
+                map.put("selectCourseNumbers", selectCourseNumbers);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return PageInfo.of(csCourses);
     }
 

@@ -35,6 +35,19 @@
             and username like concat('%',#{username},'%')
         </if>
     </select>
+    <select id="queryUser2" resultType="java.util.Map">
+        select cu.username, co.name
+        from cs_user cu
+                 inner join cs_selection ce on cu.id = ce.user_id
+                 inner join cs_course co on ce.cou_id = co.id
+        where co.status = false and co.is_delete = false and cu.role_name = #{roleName} and cu.is_delete = false
+        <if test="username">
+            and cu.username like concat('%',#{username},'%')
+        </if>
+        <if test="couName">
+            and co.name like concat('%',#{couName},'%')
+        </if>
+    </select>
     <update id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         update cs_user
         set is_delete   = true,

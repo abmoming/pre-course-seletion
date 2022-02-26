@@ -40,4 +40,12 @@ public class CsSelectionService {
     public Boolean addSelectCourse(CsSelection csSelection) {
         return csSelectionMapper.insert(csSelection) == 1;
     }
+
+    public Boolean cancelSelectCourse(CsSelection csSelection) {
+        return csSelectionMapper.deleteByUIdAndCId(csSelection) == 1;
+    }
+
+    public Integer selectCourseCount(int id) {
+        return csSelectionMapper.selectCourseCount(id);
+    }
 }
