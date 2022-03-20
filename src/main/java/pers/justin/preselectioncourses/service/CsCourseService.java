@@ -189,15 +189,47 @@ public class CsCourseService {
         return PageInfo.of(csCourses);
     }
 
-    public Object queryByMine(Integer pageNumber, Integer pageSize, String userId) {
+    public PageInfo queryByMine(Integer pageNumber, Integer pageSize, String userId) {
 
         // 使用PageHelper分页插件
         if (ObjectUtils.isNotEmpty(pageNumber) && ObjectUtils.isNotEmpty(pageSize)) {
             PageHelper.startPage(pageNumber, pageSize);
         }
 
-        List<CsCourse> csCourses = csCourseMapper.queryByUser(userId);
-        return PageInfo.of(csCourses);
+        //List<CsCourse> csCourses = csCourseMapper.queryByUser(userId);
+        List<Map<String, Object>> listMyCourses = csCourseMapper.queryByUser2(userId);
+
+        try {
+            for (Map<String, Object> map : listMyCourses) {
+                boolean status = (boolean) map.get("status");
+                // 格式转换，2022-01-01 11:00~12:00
+                Date classStartTime = (Date) map.get("classStartTime");
+                Date classEndTime = (Date) map.get("classEndTime");
+                String startFormatTime = DateUtil.format(classStartTime, DateUtil.exportXlsDateCreateTimeFormat);
+                String endFormatTime = DateUtil.format(classEndTime, DateUtil.exportXlsDateCreateTimeFormat);
+                String[] start = startFormatTime.split(" ");
+                String[] end = endFormatTime.split(" ");
+                String startDate = start[0];
+                String startHour = start[1];
+                String endHour = end[1];
+                String time = startDate + " " + startHour + " ~ " + endHour;
+
+                // 算出时间为第几周，星期几
+                int day = DateUtil.dayForWeek(startFormatTime);
+                String dayStr = null;
+                for (int i = 0; i <= WEEK_CN.length; i++) {
+                    dayStr = WEEK_CN[day - 1];
+                }
+
+                map.put("time", time);
+                map.put("weekContent", dayStr);
+                map.put("statusCn", status ? "已结课" : "未结课");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return PageInfo.of(listMyCourses);
     }
 
     /**

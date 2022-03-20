@@ -10,6 +10,10 @@ public class CsUser extends BaseEntity {
 
     private String username;
 
+    private String userCode;
+
+    private String classes;
+
     private String password;
 
     private String roleName;

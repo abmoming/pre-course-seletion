@@ -34,6 +34,13 @@ public class CsUserController {
         return RespBean.build().setData(userService.queryUser(roleName, username));
     }
 
+    /**
+     * 查询学生
+     * @param roleName
+     * @param username
+     * @param couName
+     * @return
+     */
     @GetMapping("/query2")
     public RespBean queryUser2(String roleName, String username, String couName) {
         return RespBean.build().setData(userService.queryUser2(roleName, username, couName));

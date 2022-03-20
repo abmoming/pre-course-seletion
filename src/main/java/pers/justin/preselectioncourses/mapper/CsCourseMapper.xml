@@ -36,6 +36,20 @@
             and se.user_id = #{userId}
         </if>
     </select>
+
+    <select id="queryByUser2" resultType="map">
+        select
+        co.id, co.name, co.class_address, co.class_start_time, co.class_end_time, co.num_people, co.status, co.creator,
+        co.create_time, co.is_delete,
+        co.delete_time
+        from cs_course co
+        inner join cs_selection se on co.id = se.cou_id
+        where is_delete = 0
+        <if test="userId != null">
+            and se.user_id = #{userId}
+        </if>
+    </select>
+
     <!--<select id="checkConflictsByClassTimeAndAddress" resultMap="BaseResultMap"
             parameterType="pers.justin.preselectioncourses.entity.CsCourse">
         select
